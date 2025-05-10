@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Downloader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            overflow: hidden;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            color: #333;
+        }
+
+        input[type="url"] {
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="url"]:focus {
+            border-color: #6e8efb;
+        }
+
+        button {
+            padding: 0.8rem;
+            font-size: 1rem;
+            background: #6e8efb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5a78e0;
+        }
+
+        .progress {
+            display: none;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .progress.active {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+                gap: 1rem;
+            }
+
+            input[type="url"], button {
+                font-size: 0.9rem;
+                padding: 0.6rem;
+            }
+        }
+
+        @media (max-height: 500px) {
+            .container {
+                transform: scale(0.9);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Download Actions & Stuff 1.4</h1>
+        <input type="url" id="fileUrl" placeholder="Enter file URL" required>
+        <button onclick="downloadFile()">Download</button>
+        <div class="progress" id="progress">Downloading...</div>
+    </div>
+
+    <script>
+        async function downloadFile() {
+            const url = document.getElementById('fileUrl').value;
+            const progress = document.getElementById('progress');
+
+            if (!url) {
+                alert('Please enter a valid URL');
+                return;
+            }
+
+            progress.classList.add('active');
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('File not found');
+
+                const blob = await response.blob();
+                const fileName = url.split('/').pop() || 'downloaded_file';
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                progress.classList.remove('active');
+            } catch (error) {
+                alert('Error downloading file: ' + error.message);
+                progress.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>
